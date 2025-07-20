@@ -29,12 +29,21 @@
             </ItemsControl.ItemsPanel>
             <ItemsControl.ItemTemplate>
                 <DataTemplate DataType="mv:CellViewModel">
-                    <Button VerticalContentAlignment="Center" HorizontalContentAlignment="Center"
+                    <Button Classes.value1="{Binding IsZero}"
+                            VerticalContentAlignment="Center" HorizontalContentAlignment="Center"
                             VerticalAlignment="Stretch" HorizontalAlignment="Stretch"
                             Content="{Binding Text}"
                             ClickMode="Release"
                             Command="{Binding Path=ViewModel.ClickCellCommand, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local:MainWindow}}"
                             CommandParameter="{Binding .}">
+                        <Button.Styles>
+                            <Style Selector="Button">
+                                <Setter Property="Foreground" Value="Black" />
+                            </Style>
+                            <Style Selector="Button.value1">
+                                <Setter Property="Foreground" Value="Red" />
+                            </Style>
+                        </Button.Styles>
                     </Button>
                 </DataTemplate>
             </ItemsControl.ItemTemplate>
