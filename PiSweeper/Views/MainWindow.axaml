@@ -1,0 +1,43 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:PiSweeper.Views"
+        xmlns:mv="clr-namespace:PiSweeper.ViewModels"
+        mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+        x:Class="PiSweeper.Views.MainWindow"
+        x:DataType="mv:MainWindowViewModel"
+        Title="PiSweeper">
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+        <Grid.Styles>
+            <Style Selector="Grid">
+                <Setter Property="Margin" Value="5" />
+            </Style>
+        </Grid.Styles>
+
+        <Button Grid.Row="0" Content="Neues Spiel" Command="{Binding StartNewGameCommand}"></Button>
+        <ItemsControl Grid.Row="1" ItemsSource="{Binding GameField}">
+            <ItemsControl.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <UniformGrid Columns="8" Rows="8" />
+                </ItemsPanelTemplate>
+            </ItemsControl.ItemsPanel>
+            <ItemsControl.ItemTemplate>
+                <DataTemplate DataType="mv:CellViewModel">
+                    <Button VerticalContentAlignment="Center" HorizontalContentAlignment="Center"
+                            VerticalAlignment="Stretch" HorizontalAlignment="Stretch"
+                            Content="{Binding Text}"
+                            ClickMode="Release"
+                            Command="{Binding Path=ViewModel.ClickCellCommand, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local:MainWindow}}"
+                            CommandParameter="{Binding .}">
+                    </Button>
+                </DataTemplate>
+            </ItemsControl.ItemTemplate>
+        </ItemsControl>
+    </Grid>
+</Window>

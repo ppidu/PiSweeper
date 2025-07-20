@@ -1,6 +1,8 @@
 using Avalonia;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Markup.Xaml;
+using PiSweeper.ViewModels;
+using PiSweeper.Views;
 
 namespace PiSweeper;
 
@@ -15,7 +17,9 @@ public partial class App : Application
     {
         if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
         {
-            desktop.MainWindow = new MainWindow();
+            var mainView = new MainWindow();
+            mainView.DataContext = new MainWindowViewModel();
+            desktop.MainWindow = mainView;
         }
 
         base.OnFrameworkInitializationCompleted();
