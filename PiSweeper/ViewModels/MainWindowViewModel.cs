@@ -8,6 +8,12 @@ namespace PiSweeper.ViewModels;
 
 public sealed class MainWindowViewModel : BaseViewModel
 {
+    private enum GameState
+    {
+        InGame,
+        GameOver,
+    }
+    
     private const int DefaultWidth = 10;
     private const int DefaultHeight = 10;
 
@@ -17,6 +23,8 @@ public sealed class MainWindowViewModel : BaseViewModel
     private int[][] _field = null!;
     private ObservableCollection<CellViewModel> _gameField = [];
 
+    private GameState _gameState = GameState.InGame;
+    
     private readonly DispatcherTimer _timer;
     
     public ObservableCollection<CellViewModel> GameField
@@ -64,6 +72,7 @@ public sealed class MainWindowViewModel : BaseViewModel
         LeftTags = _minesCount;
         Time = TimeSpan.Zero;
         _timer.Start();
+        _gameState = GameState.InGame;
     }
 
     private void AdjustGameFieldSize()
@@ -141,6 +150,8 @@ public sealed class MainWindowViewModel : BaseViewModel
 
     private void OnClickCell(CellViewModel cell)
     {
+        if (_gameState != GameState.InGame) return;
+        
         // Value already revealed
         if (_fieldVisibility[cell.X][cell.Y]) return;
 
@@ -183,6 +194,7 @@ public sealed class MainWindowViewModel : BaseViewModel
         {
             // Bomb clicked -> game over; reveal whole field
             _timer.Stop();
+            _gameState = GameState.GameOver;
         }
         else
         {
