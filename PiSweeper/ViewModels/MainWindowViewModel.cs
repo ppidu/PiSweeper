@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Windows.Input;
+using Avalonia.Threading;
 
 namespace PiSweeper.ViewModels;
 
@@ -16,17 +17,42 @@ public sealed class MainWindowViewModel : BaseViewModel
     private int[][] _field = null!;
     private ObservableCollection<CellViewModel> _gameField = [];
 
+    private readonly DispatcherTimer _timer;
+    
     public ObservableCollection<CellViewModel> GameField
     {
         get => _gameField;
         set => SetField(ref _gameField, value);
     }
 
+    public int LeftTags
+    {
+        get => _leftTags;
+        set => SetField(ref _leftTags, value);
+    }
+    private int _leftTags;
+    
+    public TimeSpan Time
+    {
+        get => _time;
+        private set => SetField(ref _time, value);
+    }
+    private TimeSpan _time = TimeSpan.Zero;
+    
     public MainWindowViewModel()
     {
-        ResetGame();
         ClickCellCommand = new RelayCommand(parameter => OnClickCell((CellViewModel)parameter!));
         StartNewGameCommand = new RelayCommand(_ => OnStartNewGame());
+        _timer = new  DispatcherTimer();
+        _timer.Interval = TimeSpan.FromSeconds(1);
+        _timer.Tick += OnTimerTick;
+        
+        ResetGame();
+    }
+
+    private void OnTimerTick(object? sender, EventArgs e)
+    {
+        Time += TimeSpan.FromSeconds(1);
     }
 
     private void ResetGame()
@@ -35,6 +61,9 @@ public sealed class MainWindowViewModel : BaseViewModel
         InitializeGameField();
         PrintGameField();
         RefreshUiGameField();
+        LeftTags = _minesCount;
+        Time = TimeSpan.Zero;
+        _timer.Start();
     }
 
     private void AdjustGameFieldSize()
@@ -112,8 +141,55 @@ public sealed class MainWindowViewModel : BaseViewModel
 
     private void OnClickCell(CellViewModel cell)
     {
-        Console.WriteLine("Clicked " + cell.X + "|" + cell.Y);
-        cell.RevealValue();
+        // Value already revealed
+        if (_fieldVisibility[cell.X][cell.Y]) return;
+
+        if (_field[cell.X][cell.Y] == 0)
+        {
+            // Expand zero values
+            var cellsToReveal = new List<CellViewModel>();
+            var cellsToCheck = new Queue<Point>();
+            var alreadyCheckedCells = new HashSet<Point>();
+            
+            cellsToCheck.Enqueue(new Point(cell.X, cell.Y));
+            while (cellsToCheck.Count > 0)
+            {
+                var currentPosition = cellsToCheck.Dequeue();
+                if (!alreadyCheckedCells.Add(currentPosition)) continue;
+                if (!_gameFieldMap.TryGetValue(currentPosition, out var currentCell)) continue;
+                cellsToReveal.Add(currentCell);
+                
+                // Add neighbours if not zero valued; else it is border
+                if (!currentCell.IsZero) continue;
+                cellsToCheck.Enqueue(new Point(currentPosition.X - 1, currentPosition.Y - 1));
+                cellsToCheck.Enqueue(new Point(currentPosition.X, currentPosition.Y - 1));
+                cellsToCheck.Enqueue(new Point(currentPosition.X + 1, currentPosition.Y - 1));
+                
+                cellsToCheck.Enqueue(new Point(currentPosition.X - 1, currentPosition.Y));
+                cellsToCheck.Enqueue(new Point(currentPosition.X + 1, currentPosition.Y));
+                
+                cellsToCheck.Enqueue(new Point(currentPosition.X - 1, currentPosition.Y + 1));
+                cellsToCheck.Enqueue(new Point(currentPosition.X, currentPosition.Y + 1));
+                cellsToCheck.Enqueue(new Point(currentPosition.X + 1, currentPosition.Y + 1));
+            }
+
+            foreach (var cellToReveal in cellsToReveal)
+            {
+                _fieldVisibility[cellToReveal.X][cellToReveal.Y] = true;
+                _gameFieldMap[new Point(cellToReveal.X, cellToReveal.Y)].RevealValue();
+            }
+        }
+        else if (_field[cell.X][cell.Y] == -1)
+        {
+            // Bomb clicked -> game over; reveal whole field
+            _timer.Stop();
+        }
+        else
+        {
+            // "Normal" value cell; just reveal
+            _fieldVisibility[cell.X][cell.Y] = true;
+            cell.RevealValue();
+        }
     }
 
     public ICommand StartNewGameCommand { get; private set; }

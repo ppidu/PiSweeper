@@ -19,8 +19,27 @@
                 <Setter Property="Margin" Value="5" />
             </Style>
         </Grid.Styles>
-
-        <Button Grid.Row="0" Content="Neues Spiel" Command="{Binding StartNewGameCommand}"></Button>
+        
+        <Grid Grid.Row="0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"></ColumnDefinition>
+                <ColumnDefinition Width="*"></ColumnDefinition>
+                <ColumnDefinition Width="Auto"></ColumnDefinition>
+                <ColumnDefinition Width="*"></ColumnDefinition>
+                <ColumnDefinition Width="Auto"></ColumnDefinition>
+            </Grid.ColumnDefinitions>
+            <Grid.Styles>
+                <Style Selector="Label">
+                    <Setter Property="Margin" Value="5" />
+                    <Setter Property="FontSize" Value="16" />
+                </Style>
+            </Grid.Styles>
+            
+            <Label Grid.Column="0" Content="{Binding Time}" />
+            <Button Grid.Column="2" Content="Neues Spiel" Command="{Binding StartNewGameCommand}"></Button>
+            <Label Grid.Column="4" Content="{Binding LeftTags}" />
+        </Grid>
+        
         <ItemsControl Grid.Row="1" ItemsSource="{Binding GameField}">
             <ItemsControl.ItemsPanel>
                 <ItemsPanelTemplate>
