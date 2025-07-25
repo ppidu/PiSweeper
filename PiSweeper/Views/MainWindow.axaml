@@ -29,19 +29,20 @@
             </ItemsControl.ItemsPanel>
             <ItemsControl.ItemTemplate>
                 <DataTemplate DataType="mv:CellViewModel">
-                    <Button Classes.value1="{Binding IsZero}"
+                    <Button Classes.revealed="{Binding IsRevealed}"
                             VerticalContentAlignment="Center" HorizontalContentAlignment="Center"
                             VerticalAlignment="Stretch" HorizontalAlignment="Stretch"
                             Content="{Binding Text}"
                             ClickMode="Release"
+                            Foreground="{Binding Path=Value, Converter={StaticResource ValueToForegroundColorConverter}}"
                             Command="{Binding Path=ViewModel.ClickCellCommand, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local:MainWindow}}"
                             CommandParameter="{Binding .}">
                         <Button.Styles>
                             <Style Selector="Button">
-                                <Setter Property="Foreground" Value="Black" />
+                                <Setter Property="Background" Value="Gray" />
                             </Style>
-                            <Style Selector="Button.value1">
-                                <Setter Property="Foreground" Value="Red" />
+                            <Style Selector="Button.revealed">
+                                <Setter Property="Background" Value="LightGray" />
                             </Style>
                         </Button.Styles>
                     </Button>

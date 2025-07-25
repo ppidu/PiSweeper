@@ -1,10 +1,16 @@
 <Application xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              x:Class="PiSweeper.App"
+             xmlns:core="clr-namespace:PiSweeper.Core"
              RequestedThemeVariant="Default">
-             <!-- "Default" ThemeVariant follows system theme variant. "Dark" or "Light" are other available options. -->
+    <!-- "Default" ThemeVariant follows system theme variant. "Dark" or "Light" are other available options. -->
 
     <Application.Styles>
         <FluentTheme />
     </Application.Styles>
+
+    <Application.Resources>
+        <core:ValueToForegroundColorConverter x:Key="ValueToForegroundColorConverter" />
+    </Application.Resources>
+
 </Application>
