@@ -27,6 +27,6 @@ public sealed class CellViewModel(int x, int y, int value) : BaseViewModel
     public void RevealValue()
     {
         IsRevealed = true;
-        Text = value.ToString();
+        Text = value == 0 ? "" :  value.ToString();
     }
 }
