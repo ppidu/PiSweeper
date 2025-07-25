@@ -12,7 +12,7 @@ public sealed class ValueToForegroundColorConverter : IValueConverter
         if (value is not int val) return null;
         return val switch
         {
-            -1 => Brushes.Transparent,
+            -1 => Brushes.Black,
             0 => Brushes.Transparent,
             1 => Brushes.Blue,
             2 => Brushes.Green,

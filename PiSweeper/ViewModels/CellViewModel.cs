@@ -15,7 +15,14 @@ public sealed class CellViewModel(int x, int y, int value) : BaseViewModel
         get => _isRevealed;
         private set => SetField(ref _isRevealed, value);
     }
-    private bool _isRevealed = false;
+    private bool _isRevealed;
+
+    public bool IsFlagged 
+    {
+        get => _isFlagged;
+        private set => SetField(ref _isFlagged, value);
+    }
+    private bool _isFlagged;
 
     public string Text
     {
@@ -26,7 +33,15 @@ public sealed class CellViewModel(int x, int y, int value) : BaseViewModel
 
     public void RevealValue()
     {
+        if (IsFlagged) return;
         IsRevealed = true;
-        Text = value == 0 ? "" :  value.ToString();
+        Text = value == 0 ? "" : value == -1 ? "*" : value.ToString();
+    }
+
+    public void ToggleFlag()
+    {
+        if (IsRevealed) return;
+        IsFlagged = !_isFlagged;
+        Text = _isFlagged ? "?" :  string.Empty;
     }
 }

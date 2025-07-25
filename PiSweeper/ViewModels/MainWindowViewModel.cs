@@ -51,6 +51,8 @@ public sealed class MainWindowViewModel : BaseViewModel
     {
         ClickCellCommand = new RelayCommand(parameter => OnClickCell((CellViewModel)parameter!));
         StartNewGameCommand = new RelayCommand(_ => OnStartNewGame());
+        ToggleFlagCommand = new RelayCommand(parameter => OnToggleFlag((CellViewModel)parameter!));
+        
         _timer = new  DispatcherTimer();
         _timer.Interval = TimeSpan.FromSeconds(1);
         _timer.Tick += OnTimerTick;
@@ -145,7 +147,7 @@ public sealed class MainWindowViewModel : BaseViewModel
 
         GameField = new ObservableCollection<CellViewModel>(newGameField);
     }
-
+    
     public ICommand ClickCellCommand { get; private set; }
 
     private void OnClickCell(CellViewModel cell)
@@ -193,8 +195,10 @@ public sealed class MainWindowViewModel : BaseViewModel
         else if (_field[cell.X][cell.Y] == -1)
         {
             // Bomb clicked -> game over; reveal whole field
+            _fieldVisibility[cell.X][cell.Y] = true;
             _timer.Stop();
             _gameState = GameState.GameOver;
+            cell.RevealValue();
         }
         else
         {
@@ -209,5 +213,13 @@ public sealed class MainWindowViewModel : BaseViewModel
     private void OnStartNewGame()
     {
         ResetGame();
+    }
+
+    public ICommand ToggleFlagCommand { get; private set; }
+
+    private void OnToggleFlag(CellViewModel cell)
+    {
+        if (_gameState != GameState.InGame) return;
+        cell.ToggleFlag();
     }
 }
