@@ -220,6 +220,8 @@ public sealed class MainWindowViewModel : BaseViewModel
     private void OnToggleFlag(CellViewModel cell)
     {
         if (_gameState != GameState.InGame) return;
+        if (LeftTags == 0 && !cell.IsFlagged) return;
         cell.ToggleFlag();
+        LeftTags += cell.IsFlagged ? -1 : 1;
     }
 }
