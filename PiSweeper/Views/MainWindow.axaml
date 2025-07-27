@@ -53,10 +53,15 @@
                             VerticalAlignment="Stretch" HorizontalAlignment="Stretch"
                             Content="{Binding Text}"
                             ClickMode="Release"
-                            Foreground="{Binding Path=Value, Converter={StaticResource ValueToForegroundColorConverter}}"
                             PointerPressed="InputElement_OnPointerPressed"
                             Command="{Binding Path=ViewModel.ClickCellCommand, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local:MainWindow}}"
                             CommandParameter="{Binding .}">
+                        <Button.Foreground>
+                            <MultiBinding Converter="{StaticResource CellToForegroundColorConverter}">
+                                <Binding Path="Value" />
+                                <Binding Path="IsFlagged" />
+                            </MultiBinding>
+                        </Button.Foreground>
                         <Button.Styles>
                             <Style Selector="Button">
                                 <Setter Property="Background" Value="Gray" />

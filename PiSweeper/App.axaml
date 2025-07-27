@@ -10,7 +10,7 @@
     </Application.Styles>
 
     <Application.Resources>
-        <core:ValueToForegroundColorConverter x:Key="ValueToForegroundColorConverter" />
+        <core:CellToForegroundColorConverter x:Key="CellToForegroundColorConverter" />
     </Application.Resources>
 
 </Application>
