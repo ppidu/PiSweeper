@@ -152,7 +152,7 @@ public sealed class MainWindowViewModel : BaseViewModel
 
     private void OnClickCell(CellViewModel cell)
     {
-        if (_gameState != GameState.InGame) return;
+        if (_gameState != GameState.InGame || cell.IsFlagged) return;
         
         // Value already revealed
         if (_fieldVisibility[cell.X][cell.Y]) return;
