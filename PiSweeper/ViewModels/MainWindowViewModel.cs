@@ -1,8 +1,10 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Linq;
 using System.Windows.Input;
 using Avalonia.Threading;
+using PiSweeper.Dialogs;
 
 namespace PiSweeper.ViewModels;
 
@@ -80,7 +82,10 @@ public sealed class MainWindowViewModel : BaseViewModel
     private void AdjustGameFieldSize()
     {
         _field = new int[_width][];
-        for (var i = 0; i < _width; i++) _field[i] = new int[_height];
+        for (var i = 0; i < _width; i++)
+        {
+            _field[i] = new int[_height];
+        }
     }
 
     private void InitializeGameField()
@@ -152,11 +157,8 @@ public sealed class MainWindowViewModel : BaseViewModel
 
     private void OnClickCell(CellViewModel cell)
     {
-        if (_gameState != GameState.InGame || cell.IsFlagged) return;
+        if (_gameState != GameState.InGame || cell.IsFlagged || cell.IsRevealed) return;
         
-        // Value already revealed
-        if (_fieldVisibility[cell.X][cell.Y]) return;
-
         if (_field[cell.X][cell.Y] == 0)
         {
             // Expand zero values
@@ -188,25 +190,38 @@ public sealed class MainWindowViewModel : BaseViewModel
 
             foreach (var cellToReveal in cellsToReveal)
             {
-                _fieldVisibility[cellToReveal.X][cellToReveal.Y] = true;
                 var currentCell = _gameFieldMap[new Point(cellToReveal.X, cellToReveal.Y)]; 
                 LeftTags += currentCell.IsFlagged ? 1 : 0;
                 currentCell.RevealValue();
             }
         }
-        else if (_field[cell.X][cell.Y] == -1)
+        else if (cell.IsBomb)
         {
             // Bomb clicked -> game over; reveal whole field
-            _fieldVisibility[cell.X][cell.Y] = true;
+            MessageBox.ShowDialog("You lost :-(");
+            cell.RevealValue();
             _timer.Stop();
             _gameState = GameState.GameOver;
-            cell.RevealValue();
+            foreach (var cellViewModel in _gameField)
+            {
+                cellViewModel.RevealValue();
+            }
         }
         else
         {
             // "Normal" value cell; just reveal
-            _fieldVisibility[cell.X][cell.Y] = true;
             cell.RevealValue();
+        }
+        
+        // Check if player won
+        if (_gameState == GameState.GameOver) return;
+        var allBombUnrevealed = _gameField.Where(x => x.IsBomb).All(x => !x.IsRevealed);
+        var allNormalCellsRevealed  = _gameField.Where(x => !x.IsBomb).All(x => x.IsRevealed);
+        if (allBombUnrevealed && allNormalCellsRevealed)
+        {
+            MessageBox.ShowDialog("You won :-)");
+            _timer.Stop();
+            _gameState = GameState.GameOver;
         }
     }
 
