@@ -189,7 +189,9 @@ public sealed class MainWindowViewModel : BaseViewModel
             foreach (var cellToReveal in cellsToReveal)
             {
                 _fieldVisibility[cellToReveal.X][cellToReveal.Y] = true;
-                _gameFieldMap[new Point(cellToReveal.X, cellToReveal.Y)].RevealValue();
+                var currentCell = _gameFieldMap[new Point(cellToReveal.X, cellToReveal.Y)]; 
+                LeftTags += currentCell.IsFlagged ? 1 : 0;
+                currentCell.RevealValue();
             }
         }
         else if (_field[cell.X][cell.Y] == -1)
