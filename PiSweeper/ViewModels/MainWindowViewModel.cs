@@ -24,6 +24,7 @@ public sealed class MainWindowViewModel : BaseViewModel
     private readonly int _minesCount = 10;
     private int[][] _field = null!;
     private ObservableCollection<CellViewModel> _gameField = [];
+    private readonly Dictionary<Point, CellViewModel> _gameFieldMap = [];
 
     private GameState _gameState = GameState.InGame;
     
@@ -91,31 +92,30 @@ public sealed class MainWindowViewModel : BaseViewModel
     private void InitializeGameField()
     {
         // ScatterMines
-        var minePositions = new HashSet<int>();
+        var minePositions = new HashSet<Point>();
         while (minePositions.Count < _minesCount)
         {
             var xPosition = Random.Shared.Next(0, _width - 2) + 1;
             var yPosition = Random.Shared.Next(0, _height - 2) + 1;
-            var position = xPosition + yPosition * _width;
 
-            if (!minePositions.Add(position)) continue;
+            if (!minePositions.Add(new Point(xPosition, yPosition))) continue;
 
             _field[xPosition][yPosition] = -1;
         }
-        
+
         // Calculate Field Values
         foreach (var minePosition in minePositions)
         {
-            var xPosition = minePosition % _width;
-            var yPosition = minePosition / _width;
-            
+            var xPosition = minePosition.X;
+            var yPosition = minePosition.Y;
+
             if (_field[xPosition - 1][yPosition - 1] != -1) _field[xPosition - 1][yPosition - 1] += 1;
             if (_field[xPosition][yPosition - 1] != -1) _field[xPosition][yPosition - 1] += 1;
             if (_field[xPosition + 1][yPosition - 1] != -1) _field[xPosition + 1][yPosition - 1] += 1;
-            
+
             if (_field[xPosition - 1][yPosition] != -1) _field[xPosition - 1][yPosition] += 1;
             if (_field[xPosition + 1][yPosition] != -1) _field[xPosition + 1][yPosition] += 1;
-            
+
             if (_field[xPosition - 1][yPosition + 1] != -1) _field[xPosition - 1][yPosition + 1] += 1;
             if (_field[xPosition][yPosition + 1] != -1) _field[xPosition][yPosition + 1] += 1;
             if (_field[xPosition + 1][yPosition + 1] != -1) _field[xPosition + 1][yPosition + 1] += 1;
@@ -135,18 +135,22 @@ public sealed class MainWindowViewModel : BaseViewModel
             Console.SetCursorPosition(Console.CursorLeft - 1, Console.CursorTop);
             Console.WriteLine(" ");
         }
+
         Console.WriteLine();
     }
 
     private void RefreshUiGameField()
     {
         var newGameField = new List<CellViewModel>();
+        _gameFieldMap.Clear();
 
         for (var y = 1; y < _height - 1; y++)
         {
             for (var x = 1; x < _width - 1; x++)
             {
-                newGameField.Add(new CellViewModel(x, y,  _field[x][y]));
+                var cellViewModel = new CellViewModel(x, y, _field[x][y]);
+                newGameField.Add(cellViewModel);
+                _gameFieldMap.Add(new Point(x, y), cellViewModel);
             }
         }
 

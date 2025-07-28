@@ -8,6 +8,8 @@ public sealed class CellViewModel(int x, int y, int value) : BaseViewModel
 
     public int Value => value;
 
+    public bool IsZero => value == 0;
+
     public bool IsBomb => value == -1;
 
     public bool IsRevealed
