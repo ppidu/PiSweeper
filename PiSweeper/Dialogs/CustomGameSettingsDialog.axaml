@@ -1,0 +1,56 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:vm="clr-namespace:PiSweeper.ViewModels"
+        MinWidth="350"
+        mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+        x:Class="PiSweeper.Dialogs.CustomGameSettingsDialog"
+        x:DataType="vm:CustomGameSettingsDialogViewModel"
+        x:Name="Window"
+        SizeToContent="WidthAndHeight"
+        WindowStartupLocation="CenterOwner"
+        Title="CustomGameSettingsDialog">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+
+        <StackPanel Grid.Row="0" Margin="20">
+            <StackPanel Orientation="Horizontal">
+                <TextBlock Text="Reihen:" />
+                <TextBlock Text="{Binding #Rows.Value}"
+                           HorizontalAlignment="Center" />
+            </StackPanel>
+            <Slider x:Name="Rows" Minimum="8" Value="{Binding Rows}" Maximum="30" IsSnapToTickEnabled="True"
+                    TickFrequency="1" />
+        </StackPanel>
+
+        <StackPanel Grid.Row="1" Margin="20">
+            <StackPanel Orientation="Horizontal">
+                <TextBlock Text="Zeilen:" />
+                <TextBlock Text="{Binding #Columns.Value}"
+                           HorizontalAlignment="Center" />
+            </StackPanel>
+            <Slider x:Name="Columns" Minimum="8" Value="{Binding Columns}" Maximum="30" IsSnapToTickEnabled="True"
+                    TickFrequency="1" />
+        </StackPanel>
+
+        <StackPanel Grid.Row="2" Margin="20">
+            <StackPanel Orientation="Horizontal">
+                <TextBlock Text="Bomben:" />
+                <TextBlock Text="{Binding #Mines.Value}"
+                           HorizontalAlignment="Center" />
+            </StackPanel>
+            <Slider x:Name="Mines" Minimum="10" Value="{Binding Mines}" Maximum="140" IsSnapToTickEnabled="True"
+                    TickFrequency="1" />
+        </StackPanel>
+
+        <Button Grid.Row="4" VerticalAlignment="Center" HorizontalAlignment="Center" Content="Ok"
+                Click="Button_OnClick" Padding="10 5" />
+    </Grid>
+</Window>

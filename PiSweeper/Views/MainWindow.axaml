@@ -31,7 +31,7 @@
                     <MenuItem Header="Klein" Command="{Binding SetGameFieldSizeCommand}" CommandParameter="S" />
                     <MenuItem Header="Mittel" Command="{Binding SetGameFieldSizeCommand}" CommandParameter="M" />
                     <MenuItem Header="Groß" Command="{Binding SetGameFieldSizeCommand}" CommandParameter="L" />
-                    <!-- <MenuItem Header="Individuell" Command="{Binding SetGameFieldSizeCommand}" /> -->
+                    <MenuItem Header="Individuell" Command="{Binding SetGameFieldSizeCommand}" />
                 </MenuItem>
             </MenuItem>
         </Menu>
@@ -59,7 +59,7 @@
         <ItemsControl Grid.Row="2" ItemsSource="{Binding GameField}">
             <ItemsControl.ItemsPanel>
                 <ItemsPanelTemplate>
-                    <UniformGrid Columns="{Binding Height}" Rows="{Binding Width}" />
+                    <UniformGrid Columns="{Binding Width}" Rows="{Binding Height}" />
                 </ItemsPanelTemplate>
             </ItemsControl.ItemsPanel>
             <ItemsControl.ItemTemplate>

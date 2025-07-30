@@ -18,6 +18,6 @@
         <Label Grid.Row="0" VerticalAlignment="Center" HorizontalAlignment="Center" Content="{Binding Message}"
                FontSize="32" FontWeight="Bold">
         </Label>
-        <Button Grid.Row="1" VerticalAlignment="Center" Content="Ok" Click="Button_OnClick" />
+        <Button Grid.Row="1" VerticalAlignment="Center" HorizontalAlignment="Center" Content="Ok" Click="Button_OnClick" Padding="10 5" />
     </Grid>
 </Window>

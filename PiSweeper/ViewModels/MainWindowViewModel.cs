@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Windows.Input;
+using Avalonia;
+using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Media;
 using Avalonia.Media.TextFormatting;
 using Avalonia.Threading;
@@ -84,7 +86,7 @@ public sealed class MainWindowViewModel : BaseViewModel
         ClickCellCommand = new RelayCommand(parameter => OnClickCell((CellViewModel)parameter!));
         StartNewGameCommand = new RelayCommand(_ => OnStartNewGame());
         ToggleFlagCommand = new RelayCommand(parameter => OnToggleFlag((CellViewModel)parameter!));
-        SetGameFieldSizeCommand = new RelayCommand(parameter => OnSetGameFieldSize(parameter as string));
+        SetGameFieldSizeCommand = new RelayCommand(parameter => OnSetGameFieldSizeAsync(parameter as string));
             
         _timer = new  DispatcherTimer();
         _timer.Interval = TimeSpan.FromSeconds(1);
@@ -310,7 +312,7 @@ public sealed class MainWindowViewModel : BaseViewModel
 
     public ICommand SetGameFieldSizeCommand { get; private set; }
     
-    private void OnSetGameFieldSize(string? size)
+    private async void OnSetGameFieldSizeAsync(string? size)
     {
         if (size == "S")
         {
@@ -332,7 +334,14 @@ public sealed class MainWindowViewModel : BaseViewModel
         }
         else
         {
-            // TODO: CustomDialog
+            var dialog = new CustomGameSettingsDialog();
+            var viewModel = new CustomGameSettingsDialogViewModel();
+            dialog.DataContext = viewModel;
+            await dialog.ShowDialog(((IClassicDesktopStyleApplicationLifetime)Application.Current.ApplicationLifetime).MainWindow);
+
+            Width = (int)viewModel.Rows;
+            Height = (int)viewModel.Columns;
+            _minesCount = (int)viewModel.Mines;
         }
         ResetGame();
     }
