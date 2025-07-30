@@ -72,7 +72,9 @@ public sealed class MainWindowViewModel : BaseViewModel
     {
         AdjustGameFieldSize();
         InitializeGameField();
+#if DEBUG
         PrintGameField();
+#endif
         RefreshUiGameField();
         LeftTags = _minesCount;
         Time = TimeSpan.Zero;
@@ -122,6 +124,7 @@ public sealed class MainWindowViewModel : BaseViewModel
         }
     }
 
+#if DEBUG
     private void PrintGameField()
     {
         // Display Grid for DEBUG
@@ -138,6 +141,7 @@ public sealed class MainWindowViewModel : BaseViewModel
 
         Console.WriteLine();
     }
+#endif
 
     private void RefreshUiGameField()
     {
