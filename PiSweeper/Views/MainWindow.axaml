@@ -74,6 +74,9 @@
                                 <Setter Property="Background" Value="LightGray" />
                             </Style>
                         </Button.Styles>
+                        <Viewbox>
+                            <TextBlock Text="{Binding Text}" FontWeight="Bold" FontStretch="Expanded" />
+                        </Viewbox>
                     </Button>
                 </DataTemplate>
             </ItemsControl.ItemTemplate>
