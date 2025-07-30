@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Windows.Input;
+using Avalonia.Media;
+using Avalonia.Media.TextFormatting;
 using Avalonia.Threading;
 using PiSweeper.Dialogs;
 
@@ -16,12 +18,11 @@ public sealed class MainWindowViewModel : BaseViewModel
         GameOver,
     }
     
-    private const int DefaultWidth = 10;
-    private const int DefaultHeight = 10;
+    private const int DefaultWidth = 8;
+    private const int DefaultHeight = 8;
+    private const string FontFamily = "Segoe UI";
 
-    private readonly int _width = DefaultWidth;
-    private readonly int _height = DefaultHeight;
-    private readonly int _minesCount = 10;
+    private int _minesCount = 10;
     private int[][] _field = null!;
     private ObservableCollection<CellViewModel> _gameField = [];
     private readonly Dictionary<Point, CellViewModel> _gameFieldMap = [];
@@ -50,12 +51,41 @@ public sealed class MainWindowViewModel : BaseViewModel
     }
     private TimeSpan _time = TimeSpan.Zero;
     
+    public int Width
+    {
+        get => _width;
+        private set => SetField(ref _width, value);
+    }
+    private int _width = DefaultWidth;
+    
+    public int Height
+    {
+        get => _height;
+        private set => SetField(ref _height, value);
+    }
+    private int _height = DefaultHeight;
+
+    public double MinWindowWidth
+    {
+        get => _minWindowWidth;
+        private set => SetField(ref _minWindowWidth, value);
+    }
+    private double _minWindowWidth;
+
+    public double MinWindowHeight
+    {
+        get => _minWindowHeight;
+        private set => SetField(ref _minWindowHeight, value);
+    }
+    private double _minWindowHeight;
+    
     public MainWindowViewModel()
     {
         ClickCellCommand = new RelayCommand(parameter => OnClickCell((CellViewModel)parameter!));
         StartNewGameCommand = new RelayCommand(_ => OnStartNewGame());
         ToggleFlagCommand = new RelayCommand(parameter => OnToggleFlag((CellViewModel)parameter!));
-        
+        SetGameFieldSizeCommand = new RelayCommand(parameter => OnSetGameFieldSize(parameter as string));
+            
         _timer = new  DispatcherTimer();
         _timer.Interval = TimeSpan.FromSeconds(1);
         _timer.Tick += OnTimerTick;
@@ -76,6 +106,8 @@ public sealed class MainWindowViewModel : BaseViewModel
         PrintGameField();
 #endif
         RefreshUiGameField();
+        UpdateWindowMinSize();
+        
         LeftTags = _minesCount;
         Time = TimeSpan.Zero;
         _timer.Start();
@@ -84,10 +116,10 @@ public sealed class MainWindowViewModel : BaseViewModel
 
     private void AdjustGameFieldSize()
     {
-        _field = new int[_width][];
-        for (var i = 0; i < _width; i++)
+        _field = new int[Width + 2][];
+        for (var i = 0; i < Width + 2; i++)
         {
-            _field[i] = new int[_height];
+            _field[i] = new int[Height + 2];
         }
     }
 
@@ -97,8 +129,8 @@ public sealed class MainWindowViewModel : BaseViewModel
         var minePositions = new HashSet<Point>();
         while (minePositions.Count < _minesCount)
         {
-            var xPosition = Random.Shared.Next(0, _width - 2) + 1;
-            var yPosition = Random.Shared.Next(0, _height - 2) + 1;
+            var xPosition = Random.Shared.Next(0, Width) + 1;
+            var yPosition = Random.Shared.Next(0, Height) + 1;
 
             if (!minePositions.Add(new Point(xPosition, yPosition))) continue;
 
@@ -128,9 +160,9 @@ public sealed class MainWindowViewModel : BaseViewModel
     private void PrintGameField()
     {
         // Display Grid for DEBUG
-        for (var y = 0; y < _height; y++)
+        for (var y = 0; y < Height + 2; y++)
         {
-            for (var x = 0; x < _width; x++)
+            for (var x = 0; x < Width + 2; x++)
             {
                 Console.Write(_field[x][y].ToString().PadLeft(2) + "|");
             }
@@ -148,9 +180,9 @@ public sealed class MainWindowViewModel : BaseViewModel
         var newGameField = new List<CellViewModel>();
         _gameFieldMap.Clear();
 
-        for (var y = 1; y < _height - 1; y++)
+        for (var y = 1; y < Height + 1; y++)
         {
-            for (var x = 1; x < _width - 1; x++)
+            for (var x = 1; x < Width + 1; x++)
             {
                 var cellViewModel = new CellViewModel(x, y, _field[x][y]);
                 newGameField.Add(cellViewModel);
@@ -159,6 +191,32 @@ public sealed class MainWindowViewModel : BaseViewModel
         }
 
         GameField = new ObservableCollection<CellViewModel>(newGameField);
+    }
+        
+    private void UpdateWindowMinSize()
+    {
+        var typeface = new Typeface(FontFamily, FontStyle.Normal, FontWeight.Bold, FontStretch.Expanded);
+        var layout = new TextLayout(
+            text: "W",
+            typeface: typeface,
+            fontSize: 32,
+            foreground: Brushes.Black,
+            maxWidth: double.PositiveInfinity,
+            maxHeight: double.PositiveInfinity,
+            textAlignment: TextAlignment.Left,
+            textWrapping: TextWrapping.NoWrap,
+            lineHeight: double.NaN,
+            letterSpacing: 0,
+            textTrimming: TextTrimming.None
+        );
+
+        var buttonWidth = layout.Width;
+        var buttonHeight = layout.Height;
+        const int horizontalPadding = 16; 
+        const int verticalPadding = 39; 
+
+        MinWindowWidth = Width * buttonWidth + horizontalPadding;
+        MinWindowHeight = Height * buttonHeight + verticalPadding;
     }
     
     public ICommand ClickCellCommand { get; private set; }
@@ -248,5 +306,34 @@ public sealed class MainWindowViewModel : BaseViewModel
         if (LeftTags == 0 && !cell.IsFlagged) return;
         cell.ToggleFlag();
         LeftTags += cell.IsFlagged ? -1 : 1;
+    }
+
+    public ICommand SetGameFieldSizeCommand { get; private set; }
+    
+    private void OnSetGameFieldSize(string? size)
+    {
+        if (size == "S")
+        {
+            Width = 8;
+            Height = 8;
+            _minesCount = 10;
+        }
+        else if (size == "M")
+        {
+            Width = 12;
+            Height = 12;
+            _minesCount = 23;
+        }
+        else if (size == "L")
+        {
+            Width = 20;
+            Height = 20;
+            _minesCount = 63;
+        }
+        else
+        {
+            // TODO: CustomDialog
+        }
+        ResetGame();
     }
 }

@@ -5,6 +5,8 @@
         xmlns:local="clr-namespace:PiSweeper.Views"
         xmlns:mv="clr-namespace:PiSweeper.ViewModels"
         Width="600" Height="450"
+        MinWidth="{Binding MinWindowWidth}" 
+        MinHeight="{Binding MinWindowHeight}"
         mc:Ignorable="d" d:DesignWidth="600" d:DesignHeight="450"
         x:Class="PiSweeper.Views.MainWindow"
         x:DataType="mv:MainWindowViewModel"
@@ -12,6 +14,7 @@
 
     <Grid>
         <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
@@ -21,7 +24,19 @@
             </Style>
         </Grid.Styles>
         
-        <Grid Grid.Row="0">
+        <Menu Grid.Row="0">
+            <MenuItem Header="Spiel">
+                <MenuItem Header="Neues Spiel" Command="{Binding StartNewGameCommand}" />
+                <MenuItem Header="Spielfeldgröße">
+                    <MenuItem Header="Klein" Command="{Binding SetGameFieldSizeCommand}" CommandParameter="S" />
+                    <MenuItem Header="Mittel" Command="{Binding SetGameFieldSizeCommand}" CommandParameter="M" />
+                    <MenuItem Header="Groß" Command="{Binding SetGameFieldSizeCommand}" CommandParameter="L" />
+                    <!-- <MenuItem Header="Individuell" Command="{Binding SetGameFieldSizeCommand}" /> -->
+                </MenuItem>
+            </MenuItem>
+        </Menu>
+        
+        <Grid Grid.Row="1">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="Auto"></ColumnDefinition>
                 <ColumnDefinition Width="*"></ColumnDefinition>
@@ -41,10 +56,10 @@
             <Label Grid.Column="4" Content="{Binding LeftTags}" />
         </Grid>
         
-        <ItemsControl Grid.Row="1" ItemsSource="{Binding GameField}">
+        <ItemsControl Grid.Row="2" ItemsSource="{Binding GameField}">
             <ItemsControl.ItemsPanel>
                 <ItemsPanelTemplate>
-                    <UniformGrid Columns="8" Rows="8" />
+                    <UniformGrid Columns="{Binding Height}" Rows="{Binding Width}" />
                 </ItemsPanelTemplate>
             </ItemsControl.ItemsPanel>
             <ItemsControl.ItemTemplate>
@@ -55,7 +70,6 @@
                             FontStretch="Expanded"
                             FontWeight="Bold"
                             FontSize="32"
-                            Content="{Binding Text}"
                             ClickMode="Release"
                             PointerPressed="InputElement_OnPointerPressed"
                             Command="{Binding Path=ViewModel.ClickCellCommand, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local:MainWindow}}"
