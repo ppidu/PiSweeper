@@ -104,9 +104,6 @@ public sealed class MainWindowViewModel : BaseViewModel
     {
         AdjustGameFieldSize();
         InitializeGameField();
-#if DEBUG
-        PrintGameField();
-#endif
         RefreshUiGameField();
         UpdateWindowMinSize();
         
@@ -157,25 +154,6 @@ public sealed class MainWindowViewModel : BaseViewModel
             if (_field[xPosition + 1][yPosition + 1] != -1) _field[xPosition + 1][yPosition + 1] += 1;
         }
     }
-
-#if DEBUG
-    private void PrintGameField()
-    {
-        // Display Grid for DEBUG
-        for (var y = 0; y < Height + 2; y++)
-        {
-            for (var x = 0; x < Width + 2; x++)
-            {
-                Console.Write(_field[x][y].ToString().PadLeft(2) + "|");
-            }
-
-            Console.SetCursorPosition(Console.CursorLeft - 1, Console.CursorTop);
-            Console.WriteLine(" ");
-        }
-
-        Console.WriteLine();
-    }
-#endif
 
     private void RefreshUiGameField()
     {
