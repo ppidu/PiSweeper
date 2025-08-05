@@ -65,6 +65,10 @@
             <ItemsControl.ItemTemplate>
                 <DataTemplate DataType="mv:CellViewModel">
                     <Button Classes.revealed="{Binding IsRevealed}"
+                            Classes.exploded="{Binding IsExploded}"
+                            Classes.revealedAfterGameOver="{Binding IsRevealedDueToGameOver}"
+                            Classes.wasCorrectlyFlagged="{Binding IsFlaggedCorrectly}"
+                            Classes.wasIncorrectlyFlagged="{Binding IsFlaggedIncorrectly}"
                             VerticalContentAlignment="Center" HorizontalContentAlignment="Center"
                             VerticalAlignment="Stretch" HorizontalAlignment="Stretch"
                             FontStretch="Expanded"
@@ -86,6 +90,18 @@
                             </Style>
                             <Style Selector="Button.revealed">
                                 <Setter Property="Background" Value="LightGray" />
+                            </Style>
+                            <Style Selector="Button.exploded">
+                                <Setter Property="Background" Value="OrangeRed" />
+                            </Style>
+                            <Style Selector="Button.revealedAfterGameOver">
+                                <Setter Property="Background" Value="LightCyan" />
+                            </Style>
+                            <Style Selector="Button.wasCorrectlyFlagged">
+                                <Setter Property="Background" Value="GreenYellow" />
+                            </Style>
+                            <Style Selector="Button.wasIncorrectlyFlagged">
+                                <Setter Property="Background" Value="LightCoral" />
                             </Style>
                         </Button.Styles>
                         <Viewbox>

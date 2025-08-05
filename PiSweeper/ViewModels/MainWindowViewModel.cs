@@ -260,25 +260,22 @@ public sealed class MainWindowViewModel : BaseViewModel
             {
                 var currentCell = _gameFieldMap[new Point(cellToReveal.X, cellToReveal.Y)]; 
                 LeftTags += currentCell.IsFlagged ? 1 : 0;
-                currentCell.RevealValue();
+                currentCell.RevealValue(RevealReason.PlayerClick);
             }
         }
         else if (cell.IsBomb)
         {
             // Bomb clicked -> game over; reveal whole field
             MessageBox.ShowDialog("You lost :-(");
-            cell.RevealValue();
+            cell.Explode();
             _timer.Stop();
             _gameState = GameState.GameOver;
-            foreach (var cellViewModel in _gameField)
-            {
-                cellViewModel.RevealValue();
-            }
+            RevealAll();
         }
         else
         {
             // "Normal" value cell; just reveal
-            cell.RevealValue();
+            cell.RevealValue(RevealReason.PlayerClick);
         }
         
         // Check if player won
@@ -290,6 +287,15 @@ public sealed class MainWindowViewModel : BaseViewModel
             MessageBox.ShowDialog("You won :-)");
             _timer.Stop();
             _gameState = GameState.GameOver;
+        }
+    }
+
+    private void RevealAll()
+    {
+        foreach (var cellViewModel in _gameField)
+        {
+            if (cellViewModel.IsRevealed) continue;
+            cellViewModel.RevealValue(RevealReason.GameOver);
         }
     }
 
